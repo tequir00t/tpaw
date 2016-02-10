@@ -29,28 +29,30 @@ class Config(object):
     # pylint: disable=line-too-long
     """A class containing the configurations"""
 
-    API_PATHS = {'list_cost_centers':       'cost_centers',
-                 'show_cost_center':        'cost_centers/{identifier}',
+    API_PATHS = {'accept_quote':            'quotes/{identifier}/accept',
+                 'add_document':            'orders/{identifier}/documents',
                  'create_cost_center':      'cost_centers',
-                 'document_url':            'documents/{identifier}/download',  # NOQA
-                 'invoice_url':             'invoices/{identifier}/download',  # NOQA
-                 'get_locales':             'locales',
-                 'list_orders':             'orders',
                  'create_order':            'orders',
-                 'accept_quote':            'quotes/{identifier}/accept',
-                 'reject_quote':            'quotes/{identifier}/reject',
+                 'create_rating':           'orders/{identifier}/ratings',
+                 'document_url':            'documents/{identifier}/download',  # NOQA
+                 'download_document':       'documents/{identifier}/download',
+                 'get_locales':             'locales',
+                 'get_user':                'users/me',
+                 'invoice_url':             'invoices/{identifier}/download',  # NOQA
+                 'list_cost_centers':       'cost_centers',
+                 'list_documents':          'orders/{identifier}/documents',
+                 'list_invoices':           'orders/{identifier}/invoices',
+                 'list_orders':             'orders',
+                 'list_quotes':             'orders/{identifier}/quotes',
                  'quote_url':               'quotes/{identifier}/download',
                  'reference_document_url':  'reference_documents/{identifier}/download',  # NOQA
-                 'upload_tokens':           'upload_tokens',
-                 'get_user':                'users/me',
-                 'update_order':            'orders/{identifier}',
-                 'show_order':              'orders/{identifier}',
+                 'reject_quote':            'quotes/{identifier}/reject',
                  'request_order':           'orders/{identifier}/request',
-                 'list_documents':          'orders/{identifier}/documents',
-                 'add_document':            'orders/{identifier}/documents',
-                 'list_quotes':             'orders/{identifier}/quotes',
-                 'list_invoices':           'orders/{identifier}/invoices',
-                 'create_rating':           'orders/{identifier}/ratings',
+                 'show_cost_center':        'cost_centers/{identifier}',
+                 'show_order':              'orders/{identifier}',
+                 'update_order':            'orders/{identifier}',
+                 'upload_document':         'documents',
+                 'upload_token':            'upload_tokens',
                 }
 
     @staticmethod
@@ -202,13 +204,14 @@ class BaseTT(object):
             yield thing
 
     def request(self, url, params=None, data=None, retry_on_error=False,
-                method=None):
+                method=None, files=None):
         """Make a HTTP request and return the response"""
         return self._request(url, params, data, raw_response=True,
-                             retry_on_error=retry_on_error, method=method)
+                             retry_on_error=retry_on_error, method=method,
+                             files=None)
 
     def request_json(self, url, params=None, data=None, as_objects=True,
-                     retry_on_error=False, method=None):
+                     retry_on_error=False, method=None, files=None):
         """Get the JSON processed from a page"""
         response = self._request(url, params, data, method=method,
                                  retry_on_error=retry_on_error)
@@ -239,7 +242,7 @@ class UnauthenticatedTT(BaseTT):
         upload_token. Upload tokens  will expire after a  give time so
         they should only be used  right before the upload takes place.
         """
-        url = self.config['upload_tokens']
+        url = self.config['upload_token']
         return self.request_json(url, method='POST', *args,
                                  **kwargs)['data']['upload_token']
 
@@ -260,7 +263,7 @@ class AuthenticatedTT(UnauthenticatedTT):
         if self.config.access_token is None:
             return super(AuthenticatedTT, self).upload_token(*args, **kwargs)
         else:
-            url = self.config['upload_tokens']
+            url = self.config['upload_token']
             params = {"access_token": self.config.access_token}
             return self.request_json(url, params=params, method='POST', *args,
                                      **kwargs)['data']['upload_token']
@@ -307,6 +310,13 @@ class OrderMixin(AuthenticatedTT):
         params.update({'identifier': identifier})
         return self.request_json(url, params=params, method='GET')
 
+    def request_order(self, identifier):
+        """request an order"""
+        url = self.config['request_order'].format(identifier=identifier)
+        params = self.params
+        params.update({'identifier': identifier})
+        return self.request_json(url, params=params, method='PATCH')
 
-class Toptranslation(OrderMixin):
-    """Provides access to Toptranslation's API"""
+
+class Toptranslation(OrderMixin, DocumentMixin):
+       """Provides access to Toptranslation's API"""
