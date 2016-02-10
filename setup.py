@@ -1,0 +1,50 @@
+import os
+import re
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
+
+PACKAGE_NAME = 'tpaw'
+
+
+HERE = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(HERE, 'README.rst')) as fp:
+    README = fp.read()
+with open(os.path.join(HERE, PACKAGE_NAME, '__init__.py')) as fp:
+    VERSION = re.search("__version__ = '([^']+)'", fp.read()).group(1)
+
+
+setup(
+    name=PACKAGE_NAME,
+    version=VERSION,
+    author='Daniel Neagaru',
+    author_email='daniel@dgeex.de',
+    maintainer='Daniel Neagaru',
+    maintainer_email='daniel@dgeex.de',
+    url='https://developer.toptranslation.com/',
+    description=('TPAW, an acronym for `Toptranslation Python API Wrapper`, is a '
+                 'python package that allows for simple access to '
+                 'Toptranslation\'s API.'),
+    long_description=README,
+    classifiers=['Development Status :: 1 - Planning',
+                 'Environment :: Console',
+                 'Intended Audience :: Developers',
+                 'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+                 'Natural Language :: English',
+                 'Operating System :: POSIX :: Linux',
+                 'Programming Language :: Python :: 3.5',
+                 'Topic :: Utilities'],
+    license='GPLv3',
+    keywords='toptranslation api wrapper',
+    packages=[PACKAGE_NAME],
+    package_data={'': ['COPYING'], PACKAGE_NAME: ['*.ini']},
+    install_requires=['decorator>=3.4.2', 'requests>=2.3.0', 'six>=1.4',
+                      'update_checker>=0.11'],
+    tests_require=['betamax>=0.4.2', 'betamax-matchers>=0.2.0',
+                   'betamax_serializers>=0.1.1', 'mock>=1.0.0'],
+    entry_points={'console_scripts': [
+            'praw-multiprocess = praw.multiprocess:run']},
+    test_suite='tests',
+    zip_safe=False,
+    )
