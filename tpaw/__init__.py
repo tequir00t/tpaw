@@ -92,8 +92,7 @@ class Config(object):
 
     def document_store_url(self, key):
         """Returns the DocumentStore URL"""
-        return urljoin(self.document_url, self.api_version + '/' +
-                       self.API_PATHS[key])
+        return urljoin(self.document_url, self.API_PATHS[key])
 
 class BaseTT(object):
     """A base class that allows access to Toptranslation's API"""
@@ -324,10 +323,11 @@ class OrderMixin(AuthenticatedTT):
 
 class DocumentMixin(AuthenticatedTT):
     """Document mixin"""
-    def upload_document(self, document):
+    def upload_document(self, upload_token, document):
         """Upload a document"""
         url = self.config.document_store_url('upload_document')
-        params
+        data = {"upload_token": upload_token}
+        return self.request_json(url, data=data, files=document)
 
 class Toptranslation(OrderMixin, DocumentMixin):
        """Provides access to Toptranslation's API"""
