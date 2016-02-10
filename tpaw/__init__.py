@@ -90,6 +90,10 @@ class Config(object):
         return urljoin(self.api_url, self.api_version + '/' +
                        self.API_PATHS[key])
 
+    def document_store_url(self, key):
+        """Returns the DocumentStore URL"""
+        return urljoin(self.document_url, self.api_version + '/' +
+                       self.API_PATHS[key])
 
 class BaseTT(object):
     """A base class that allows access to Toptranslation's API"""
@@ -264,8 +268,8 @@ class AuthenticatedTT(UnauthenticatedTT):
             return super(AuthenticatedTT, self).upload_token(*args, **kwargs)
         else:
             url = self.config['upload_token']
-            params = {"access_token": self.config.access_token}
-            return self.request_json(url, params=params, method='POST', *args,
+            data = {"access_token": self.config.access_token}
+            return self.request_json(url, data=data, method='POST', *args,
                                      **kwargs)['data']['upload_token']
 
 
@@ -285,13 +289,13 @@ class OrderMixin(AuthenticatedTT):
                       service_level=None, cost_center_identifier=None):
         """create a new order"""
         url = self.config['create_order']
-        params = self.params
-        params.update({'name': name, 'reference': reference,
-                       'commment': comment, 'coupon_code': coupon_code,
-                       'desired_delivery_date': desired_delivery_date,
-                       'service_level': service_level,
-                       'cost_center_identifier': cost_center_identifier})
-        return self.request_json(url, params=params, method='POST')
+        data = self.params
+        data.update({'name': name, 'reference': reference,
+                     'commment': comment, 'coupon_code': coupon_code,
+                     'desired_delivery_date': desired_delivery_date,
+                     'service_level': service_level,
+                     'cost_center_identifier': cost_center_identifier})
+        return self.request_json(url, data=data, method='POST')
 
     def update_order(self, identifier, reference=None, name=None,
                      cost_center_identifier=None):
@@ -317,6 +321,13 @@ class OrderMixin(AuthenticatedTT):
         params.update({'identifier': identifier})
         return self.request_json(url, params=params, method='PATCH')
 
+
+class DocumentMixin(AuthenticatedTT):
+    """Document mixin"""
+    def upload_document(self, document):
+        """Upload a document"""
+        url = self.config.document_store_url('upload_document')
+        params
 
 class Toptranslation(OrderMixin, DocumentMixin):
        """Provides access to Toptranslation's API"""

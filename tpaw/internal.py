@@ -54,8 +54,6 @@ def _prepare_request(session, url, params, data, auth, files,
     if isinstance(data, dict):
         if not auth:
             data.setdefault('api_type', 'json')
-            if session.modhash:
-                data.setdefault('uh', session.modhash)
     else:
         request.headers.setdefault('Content-Type', 'application/json')
 
