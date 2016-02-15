@@ -211,13 +211,13 @@ class BaseTT(object):
         """Make a HTTP request and return the response"""
         return self._request(url, params, data, raw_response=True,
                              retry_on_error=retry_on_error, method=method,
-                             files=None)
+                             files=files)
 
     def request_json(self, url, params=None, data=None, as_objects=True,
                      retry_on_error=False, method=None, files=None):
         """Get the JSON processed from a page"""
         response = self._request(url, params, data, method=method,
-                                 retry_on_error=retry_on_error)
+                                 files=files, retry_on_error=retry_on_error)
         self._request_url = url
 
         data = json.loads(response)
@@ -323,11 +323,11 @@ class OrderMixin(AuthenticatedTT):
 
 class DocumentMixin(AuthenticatedTT):
     """Document mixin"""
-    def upload_document(self, upload_token, document):
+    def upload_document(self, upload_token, document, document_type):
         """Upload a document"""
         url = self.config.document_store_url('upload_document')
-        data = {"upload_token": upload_token}
-        return self.request_json(url, data=data, files=document)
+        data = {"token": upload_token, "type": document_type}
+        return self.request_json(url, data=data, files={'file': open(document,'rb')})
 
 class Toptranslation(OrderMixin, DocumentMixin):
        """Provides access to Toptranslation's API"""
