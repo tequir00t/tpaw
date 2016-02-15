@@ -336,7 +336,7 @@ class DocumentMixin(AuthenticatedTT):
         url = self.config.document_store_url('download_document').format(
               identifier=identifier)
         data = {"token": token}
-        #return self.request_json(
+        # Should return the binary response, not the json
 
 class Toptranslation(OrderMixin, DocumentMixin):
        """Provides access to Toptranslation's API"""
