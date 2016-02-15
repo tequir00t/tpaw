@@ -323,11 +323,20 @@ class OrderMixin(AuthenticatedTT):
 
 class DocumentMixin(AuthenticatedTT):
     """Document mixin"""
-    def upload_document(self, upload_token, document, document_type):
+    def upload_document(self, token, document, document_type):
         """Upload a document"""
         url = self.config.document_store_url('upload_document')
-        data = {"token": upload_token, "type": document_type}
-        return self.request_json(url, data=data, files={'file': open(document,'rb')})
+        data = {"token": token, "type": document_type}
+        return self.request_json(url, data=data,
+                                 files={'file': open(document,'rb')},
+                                 method='POST')
+
+    def download_document(self, token, identifier):
+        """Download a document"""
+        url = self.config.document_store_url('download_document').format(
+              identifier=identifier)
+        data = {"token": token}
+        #return self.request_json(
 
 class Toptranslation(OrderMixin, DocumentMixin):
        """Provides access to Toptranslation's API"""
