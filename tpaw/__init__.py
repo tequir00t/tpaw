@@ -94,6 +94,7 @@ class Config(object):
         """Returns the DocumentStore URL"""
         return urljoin(self.document_url, self.API_PATHS[key])
 
+
 class BaseTT(object):
     """A base class that allows access to Toptranslation's API"""
     RETRY_CODES = [502, 503, 504]
@@ -284,8 +285,8 @@ class OrderMixin(AuthenticatedTT):
         return self.request_json(url, params=params, method='GET')
 
     def create_order(self, name=None, reference=None, comment=None,
-                      coupon_code=None, desired_delivery_date=None,
-                      service_level=None, cost_center_identifier=None):
+                     coupon_code=None, desired_delivery_date=None,
+                     service_level=None, cost_center_identifier=None):
         """create a new order"""
         url = self.config['create_order']
         data = self.params
@@ -328,15 +329,16 @@ class DocumentMixin(AuthenticatedTT):
         url = self.config.document_store_url('upload_document')
         data = {"token": token, "type": document_type}
         return self.request_json(url, data=data,
-                                 files={'file': open(document,'rb')},
+                                 files={'file': open(document, 'rb')},
                                  method='POST')
 
     def download_document(self, token, identifier):
         """Download a document"""
-        url = self.config.document_store_url('download_document').format(
-              identifier=identifier)
-        data = {"token": token}
-        #return self.request_json(
+        # url = self.config.document_store_url('download_document').format(
+        #       identifier=identifier)
+        # data = {"token": token}
+        # return self.request_json(
+
 
 class Toptranslation(OrderMixin, DocumentMixin):
-       """Provides access to Toptranslation's API"""
+    """Provides access to Toptranslation's API"""
