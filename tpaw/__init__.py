@@ -33,7 +33,6 @@ class Config(object):
                  'add_document':            'orders/{identifier}/documents',
                  'create_cost_center':      'cost_centers',
                  'create_order':            'orders',
-                 'create_rating':           'orders/{identifier}/ratings',
                  'document_url':            'documents/{identifier}/download',  # NOQA
                  'download_document':       'documents/{identifier}/download',
                  'get_locales':             'locales',
@@ -45,6 +44,7 @@ class Config(object):
                  'list_orders':             'orders',
                  'list_quotes':             'orders/{identifier}/quotes',
                  'quote_url':               'quotes/{identifier}/download',
+                 'rate_order':              'orders/{identifier}/ratings',
                  'reference_document_url':  'reference_documents/{identifier}/download',  # NOQA
                  'reject_quote':            'quotes/{identifier}/reject',
                  'request_order':           'orders/{identifier}/request',
@@ -320,6 +320,13 @@ class OrderMixin(AuthenticatedTT):
         params = self.params
         params.update({'identifier': identifier})
         return self.request_json(url, params=params, method='PATCH')
+
+    def rate_order(self, identifier):
+        """rate an order"""
+        url = self.config['rate_order'].format(identifier=identifier)
+        data = self.params
+        data.update({'identifier': identifier})
+        return self.request_json(url, data=data, method='POST')
 
 
 class DocumentMixin(AuthenticatedTT):
