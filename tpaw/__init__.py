@@ -368,5 +368,14 @@ class QuotesMixin(AuthenticatedTT):
         return self.request_json(url, params=params, method='GET')
 
 
-class Toptranslation(OrderMixin, DocumentMixin, QuotesMixin):
+class InvoicesMixin(AuthenticatedTT):
+    """Invoices mixin"""
+    def list_invoices(self, identifier):
+        """List invoices of an order"""
+        url = self.config['list_invoices'].format(identifier=identifier)
+        params = self.params
+        return self.request_json(url, params=params, method='GET')
+
+
+class Toptranslation(OrderMixin, DocumentMixin, QuotesMixin, InvoicesMixin):
     """Provides access to Toptranslation's API"""
