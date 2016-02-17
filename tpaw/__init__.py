@@ -339,5 +339,6 @@ class DocumentMixin(AuthenticatedTT):
         # data = {"token": token}
         # return self.request_json(
 
+
 class Toptranslation(OrderMixin, DocumentMixin):
     """Provides access to Toptranslation's API"""
