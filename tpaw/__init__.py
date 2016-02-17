@@ -341,6 +341,7 @@ class DocumentMixin(AuthenticatedTT):
 
     def add_document(self, identifier, document_store_id, document_token,
                      locale_code, target_locale_codes, name=None):
+        """Add a document to an order"""
         url = self.config['add_document'].format(identifier=identifier)
         data = self.params
         data.update({'identifier': identifier,
@@ -351,6 +352,11 @@ class DocumentMixin(AuthenticatedTT):
                      'name': name})
         return self.request_json(url, data=data, method='POST')
 
+    def list_documents(self, identifier):
+        """List documents of an order"""
+        url = self.config['list_documents'].format(identifier=identifier)
+        params = self.params
+        return self.request_json(url, params=params, method='GET')
 
 class Toptranslation(OrderMixin, DocumentMixin):
     """Provides access to Toptranslation's API"""
